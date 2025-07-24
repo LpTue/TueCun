@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bên nhau - Kỷ niệm của chúng ta</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <span class="time">Happy Day!</span>
+            <span class="status-icons">💖✨</span>
+        </div>
+
+        <div class="main-content">
+            <div class="love-circle-container">
+                <div class="love-circle-inner" id="loveCircleInner">
+                    <p class="love-text">Bên nhau</p>
+                    <div class="day-count" id="dayCount">0</div>
+                    <p class="start-date" id="startDateDisplay">Ngày bắt đầu: 10/20/2023</p>
+                </div>
+                <canvas id="loveWaveCanvas"></canvas>
+            </div>
+
+            <button class="gallery-button" id="openGalleryBtn">
+                Ảnh kỷ niệm 💖
+            </button>
+        </div>
+
+        <div class="profile-section">
+            <div class="profile-card">
+                <img src="Tue.JPG" alt="Ảnh đại diện Chồng Cùnn" class="avatar" id="avatarMale">
+                <p class="name" id="nameMale">Chồng Cùnn</p>
+            </div>
+            <div class="heart-icon">💖</div>
+            <div class="profile-card">
+                <img src="Cun.JPEG" alt="Ảnh đại diện Cùnn iu" class="avatar" id="avatarFemale">
+                <p class="name" id="nameFemale">Cùnn iu</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-popup" id="galleryPopup">
+        <div class="gallery-content">
+            <span class="close-button" id="closeGalleryBtn">&times;</span>
+            <h2>Ảnh kỷ niệm của chúng ta</h2>
+            <div class="gallery-images" id="galleryImagesContainer">
+                </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
