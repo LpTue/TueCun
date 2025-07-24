@@ -17,7 +17,7 @@ body {
     max-width: 450px; /* Chiều rộng tối đa của điện thoại */
     height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
     max-height: 800px; /* Chiều cao tối đa */
-    background-image: url('BG.png'); /* Ảnh nền của bạn */
+    background-image: url('bg.png'); /* Ảnh nền của bạn */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
