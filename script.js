@@ -8,12 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const now = new Date();
         const diffTime = Math.abs(now - startDate);
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        dayCountElement.textContent = diffDays;
+        dayCountElement.textContent = diffDays; // Cập nhật số ngày hiển thị
     }
 
     // Hiển thị ngày bắt đầu dưới dạng DD/MM/YYYY
     const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
-    startDateDisplay.textContent = `Ngày bắt đầu: ${startDate.toLocaleDateString('vi-VN', options)}`;
+    startDateDisplay.textContent = `Ngày bắt đầu: ${startDate.toLocaleDateString('vi-VN', options)}`; // Hiển thị "Ngày bắt đầu: 10/20/2023"
 
     updateDayCount(); // Cập nhật lần đầu
     setInterval(updateDayCount, 1000 * 60 * 60); // Cập nhật mỗi giờ
@@ -37,11 +37,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const galleryImagesContainer = document.getElementById('galleryImagesContainer');
 
     const galleryImagePaths = [];
-    for (let i = 1; i <= 113; i++) {
-        galleryImagePaths.push(`images/anh (${i}).jpeg`);
+
+    // **** ĐIỀU CHỈNH ĐƯỜNG DẪN ẢNH GALLERY Ở ĐÂY ****
+    // Vì các ảnh sẽ nằm ngang hàng với index.html, chúng ta không cần tiền tố 'images/' nữa.
+    // Đảm bảo tên file CHÍNH XÁC là 'anh (số).jpeg' (chữ 'anh' thường, đuôi '.jpeg' thường)
+    for (let i = 1; i <= 113; i++) { // Vòng lặp từ 1 đến 113 ảnh
+        galleryImagePaths.push(`anh (${i}).jpeg`); // Đã bỏ 'images/'
     }
-    // Bạn có thể thêm các ảnh thủ công khác ở đây nếu cần
-    // galleryImagePaths.push('images/anh_rieng_cua_tui.png');
+    // Nếu bạn có ít hơn hoặc nhiều hơn 113 ảnh, hãy điều chỉnh số lượng ở trên.
 
     function loadGalleryImages() {
         galleryImagesContainer.innerHTML = '';
@@ -68,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Phần Hiệu ứng Sóng nước bằng Canvas (MỚI) ---
+    // --- Phần Hiệu ứng Sóng nước bằng Canvas ---
     const canvas = document.getElementById('loveWaveCanvas');
     const ctx = canvas.getContext('2d');
     let frame = 0; // Biến đếm khung hình để tạo hiệu ứng chuyển động
