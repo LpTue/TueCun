@@ -1,0 +1,366 @@
+/* Tổng quan */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    overflow: hidden; /* Ngăn cuộn trang chính */
+    color: #333;
+    font-size: 16px;
+}
+
+.container {
+    width: 100%;
+    max-width: 450px; /* Chiều rộng tối đa của điện thoại */
+    height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
+    max-height: 800px; /* Chiều cao tối đa */
+    background-image: url('bg.png'); /* Ảnh nền của bạn */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-radius: 30px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Đẩy các phần tử ra các góc */
+    align-items: center;
+    position: relative;
+    overflow: hidden; /* Quan trọng để lớp phủ không tràn ra */
+}
+
+/* Lớp phủ (Overlay) màu trắng/trong suốt nằm trên ảnh nền */
+.container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.5); /* Độ trong suốt mặc định */
+    z-index: 0; /* Đặt lớp phủ ở lớp dưới cùng (sau ảnh nền) */
+}
+
+/* Đảm bảo các nội dung chính nằm trên lớp phủ và ảnh nền */
+.top-bar, .main-content, .profile-section {
+    position: relative; /* Quan trọng để z-index có tác dụng */
+    z-index: 1; /* Đảm bảo các phần tử này hiển thị trên lớp phủ */
+}
+
+
+/* Phần thanh trạng thái trên cùng */
+.top-bar {
+    width: calc(100% - 40px); /* Khoảng cách padding 20px mỗi bên */
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9em;
+    color: #555;
+    margin-bottom: 20px; /* Khoảng cách với phần main-content */
+    font-weight: bold;
+    position: relative; /* Thêm để định vị music-info */
+}
+
+.top-bar .time {
+    font-weight: bold;
+}
+
+.top-bar .status-icons {
+    display: flex;
+    align-items: center;
+}
+
+/* CSS cho phần hiển thị tên nhạc */
+.music-info {
+    position: absolute; /* Đặt tuyệt đối trong top-bar */
+    top: 15px; /* Điều chỉnh vị trí theo ý muốn */
+    right: 70px; /* Điều chỉnh vị trí theo ý muốn, tránh chồng lên status-icons */
+    display: flex;
+    align-items: center;
+    color: #ff69b4; /* Màu hồng cho icon và chữ */
+    font-size: 0.9em;
+    font-weight: bold;
+    background-color: rgba(255, 255, 255, 0.8); /* Nền nhẹ để dễ đọc */
+    padding: 5px 10px;
+    border-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    opacity: 0; /* Ban đầu ẩn đi */
+    visibility: hidden; /* Ban đầu ẩn đi */
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.music-info.active {
+    opacity: 1; /* Hiển thị khi có class 'active' */
+    visibility: visible;
+}
+
+.music-info .music-icon {
+    margin-right: 8px;
+    animation: bounce 1s infinite alternate; /* Hiệu ứng nhún nhảy cho icon */
+}
+
+@keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-3px); }
+}
+
+
+/* Phần nội dung chính (số ngày, tên) */
+.main-content {
+    flex-grow: 1; /* Cho phép phần này giãn nở để chiếm không gian */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+/* --- CSS cho Vòng Tròn Đếm Ngày và Canvas sóng --- */
+.love-circle-container {
+    position: relative;
+    width: 250px; /* Kích thước vòng tròn */
+    height: 250px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.7); /* Nền vòng tròn */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; /* Quan trọng để canvas không tràn ra ngoài */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px; /* Khoảng cách với nút bên dưới */
+}
+
+.love-circle-inner {
+    position: absolute; /* Đặt lại absolute để nó nằm trên canvas */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 2; /* Đảm bảo chữ nằm trên sóng canvas */
+    text-align: center;
+    color: #333; /* Màu chữ cũ */
+}
+
+.love-circle-inner .love-text {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #ff69b4; /* Màu chữ "Bên nhau" trong vòng tròn */
+    margin-bottom: 5px;
+}
+
+.love-circle-inner .day-count {
+    font-size: 4.5em; /* Kích thước số ngày trong vòng tròn */
+    font-weight: bolder;
+    color: #ff69b4; /* Màu số ngày trong vòng tròn */
+    margin: 5px 0;
+    line-height: 1;
+}
+
+.love-circle-inner .start-date {
+    font-size: 1em;
+    color: #555;
+    margin-top: 5px;
+}
+
+/* CSS cho Canvas sóng */
+#loveWaveCanvas {
+    position: absolute;
+    bottom: 0; /* Đặt đáy canvas ở đáy love-circle-container */
+    left: 0;
+    width: 100%;
+    height: 100%; /* Chiếm toàn bộ kích thước của love-circle-container */
+    z-index: 1; /* Nằm dưới chữ, trên nền */
+    /* background-color: transparent; */ /* Đảm bảo nền trong suốt nếu bạn muốn nền vòng tròn là màu trắng */
+}
+
+/* Phần hồ sơ (profile) dưới cùng */
+.profile-section {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    margin-bottom: 20px; /* Khoảng cách với đáy container */
+}
+
+.profile-card {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%; /* Đây là dòng quan trọng để ảnh avatar hiển thị tròn */
+    object-fit: cover; /* Đảm bảo ảnh được cắt để vừa vặn mà không bị méo */
+    border: 3px solid #ff69b4; /* Viền hồng */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    margin-bottom: 5px;
+}
+
+.name {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+    margin-top: 5px;
+}
+
+.heart-icon {
+    font-size: 2.5em;
+    color: #ff69b4; /* Màu hồng */
+    margin: 0 15px;
+    animation: pulse 1.5s infinite; /* Hiệu ứng đập */
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* -- CSS cho nút Gallery -- */
+.gallery-button {
+    background-color: #ff69b4; /* Màu hồng */
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 30px; /* Bo tròn nút */
+    font-size: 1.1em;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 30px; /* Khoảng cách với vòng tròn */
+}
+
+.gallery-button:hover {
+    background-color: #e652a2; /* Màu đậm hơn khi rê chuột */
+    transform: translateY(-2px); /* Hiệu ứng nhấc nhẹ */
+}
+
+/* -- CSS cho Popup Gallery ảnh -- */
+.gallery-popup {
+    display: none; /* Ban đầu ẩn đi */
+    position: fixed; /* Nằm cố định trên màn hình */
+    z-index: 100; /* Đảm bảo nó luôn nằm trên cùng */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Cho phép cuộn nếu nội dung lớn */
+    background-color: rgba(0, 0, 0, 0.8); /* Nền đen trong suốt */
+    backdrop-filter: blur(5px); /* Hiệu ứng làm mờ nền phía sau */
+    justify-content: center;
+    align-items: center;
+}
+
+.gallery-popup.active {
+    display: flex; /* Hiển thị khi có class 'active' */
+}
+
+.gallery-content {
+    background-color: #fefefe;
+    margin: auto; /* Căn giữa */
+    padding: 30px;
+    border-radius: 15px;
+    width: 80%; /* Chiều rộng popup */
+    max-width: 900px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    position: relative;
+    text-align: center;
+    max-height: 90vh; /* Giới hạn chiều cao để có thể cuộn */
+    overflow-y: auto; /* Cho phép cuộn dọc */
+}
+
+.gallery-content h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 2em;
+}
+
+.gallery-images {
+    display: grid; /* Sử dụng Grid để sắp xếp ảnh */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Tự động co giãn */
+    gap: 15px; /* Khoảng cách giữa các ảnh */
+    padding: 10px;
+}
+
+.gallery-images img {
+    width: 100%;
+    height: 150px; /* Chiều cao cố định cho ảnh */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    border-radius: 50%; /* Đã thay đổi thành 50% để ảnh trong gallery tròn */
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.gallery-images img:hover {
+    transform: scale(1.05); /* Phóng to nhẹ khi rê chuột */
+}
+
+.close-button {
+    color: #aaa;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 35px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close-button:hover,
+.close-button:focus {
+    color: #ff69b4; /* Màu hồng khi rê chuột */
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Điều chỉnh Responsive cho màn hình nhỏ */
+@media (max-width: 600px) {
+    .love-circle-container {
+        width: 200px;
+        height: 200px;
+    }
+    .love-circle-inner .love-text {
+        font-size: 1.4em;
+    }
+    .love-circle-inner .day-count {
+        font-size: 3.5em;
+    }
+    .love-circle-inner .start-date {
+        font-size: 0.9em;
+    }
+    .gallery-button {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+    .gallery-content {
+        width: 95%;
+        padding: 20px;
+    }
+    .gallery-images {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+    .gallery-images img {
+        height: 100px;
+    }
+    /* Điều chỉnh vị trí music-info trên màn hình nhỏ */
+    .music-info {
+        right: 15px; /* Dịch sang trái hơn một chút */
+        padding: 3px 8px;
+        font-size: 0.8em;
+    }
+    .music-info .music-icon {
+        margin-right: 5px;
+    }
+}

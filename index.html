@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bên nhau - Kỷ niệm của chúng ta</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="top-bar">
+            <span class="time">Happy Day!</span>
+            <span class="status-icons">💖✨</span>
+            <div class="music-info" id="musicInfo">
+                <i class="fas fa-music music-icon"></i>
+                <span class="current-song-name" id="currentSongName"></span>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="love-circle-container">
+                <div class="love-circle-inner" id="loveCircleInner">
+                    <p class="love-text">Bên nhau</p>
+                    <div class="day-count" id="dayCount">0</div>
+                    <p class="start-date" id="startDateDisplay">Ngày bắt đầu: 10/20/2023</p>
+                </div>
+                <canvas id="loveWaveCanvas"></canvas>
+            </div>
+
+            <button class="gallery-button" id="openGalleryBtn">
+                Ảnh kỷ niệm 💖
+            </button>
+        </div>
+
+        <div class="profile-section">
+            <div class="profile-card">
+                <img src="tue.jpg" alt="Ảnh đại diện Chồng Cùnn" class="avatar" id="avatarMale">
+                <p class="name" id="nameMale">Chồng Cùnn</p>
+            </div>
+            <div class="heart-icon">💖</div>
+            <div class="profile-card">
+                <img src="cun.jpeg" alt="Ảnh đại diện Cùnn iu" class="avatar" id="avatarFemale">
+                <p class="name" id="nameFemale">Cùnn iu</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="gallery-popup" id="galleryPopup">
+        <div class="gallery-content">
+            <span class="close-button" id="closeGalleryBtn">&times;</span>
+            <h2>Ảnh kỷ niệm của chúng ta</h2>
+            <div class="gallery-images" id="galleryImagesContainer">
+                </div>
+        </div>
+    </div>
+
+    <audio id="backgroundMusic" loop></audio>
+
+    <script src="script.js"></script>
+</body>
+</html>
