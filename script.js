@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // **** ĐIỀU CHỈNH ĐƯỜNG DẪN ẢNH GALLERY Ở ĐÂY ****
     // Đảm bảo tên file CHÍNH XÁC là 'anh (số).jpeg' (chữ 'anh' thường, đuôi '.jpeg' thường)
-    for (let i = 1; i <= 136; i++) { // Vòng lặp từ 1 đến 139 ảnh
+    for (let i = 1; i <= 139; i++) { // Vòng lặp từ 1 đến 139 ảnh
         galleryImagePaths.push(`anh (${i}).jpeg`); // Đã bỏ 'images/'
     }
     // Nếu bạn có ít hơn hoặc nhiều hơn 113 ảnh, hãy điều chỉnh số lượng ở trên.
@@ -117,18 +117,30 @@ document.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', resizeCanvas); // Cập nhật kích thước canvas khi cửa sổ thay đổi
     drawWave(); // Bắt đầu vẽ sóng
 
-    // --- Music Playback (Phát nhiều bài) ---
+    // --- Music Playback (Phát nhiều bài & Điều khiển) ---
     const backgroundMusic = document.getElementById('backgroundMusic');
     const currentSongNameElement = document.getElementById('currentSongName');
     const musicInfoElement = document.getElementById('musicInfo');
+    // Loại bỏ: const musicOverlay = document.getElementById('musicOverlay');
+    // Loại bỏ: const playMusicButton = document.getElementById('playMusicButton');
+
+    const playPauseButton = document.getElementById('playPauseButton');
+    const nextButton = document.getElementById('nextButton');
+    const progressBar = document.getElementById('progressBar');
+    const currentTimeElement = document.getElementById('currentTime');
+    const totalTimeElement = document.getElementById('totalTime');
+    const songProgressContainer = document.querySelector('.song-progress');
+
+
     let currentSongIndex = 0;
+    let isPlaying = false; // Biến theo dõi trạng thái phát nhạc
 
     // **** ĐIỀU CHỈNH DANH SÁCH BÀI HÁT Ở ĐÂY ****
     // Đảm bảo các file nhạc (ví dụ: "ten_bai_hat_1.mp3", "ten_bai_hat_2.mp3")
     // nằm cùng thư mục với index.html
     // Tên bạn nhập vào đây sẽ là tên file thật của bạn (có thể viết thường)
     const musicPlaylist = [
-        'nơi này có anh.mp3', // Thay đổi tên file nhạc của bạn
+        'nơi này có anh.mp3', // Tên file nhạc của bạn, viết thường
         'đường tôi chở em về.mp3',
         'chàng trai bất tử.mp3',
         // Thêm các bài hát khác vào đây, mỗi bài là một chuỗi
@@ -142,6 +154,21 @@ document.addEventListener('DOMContentLoaded', () => {
                   .split(' ') // Chia chuỗi thành mảng các từ
                   .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Viết hoa chữ cái đầu và viết thường phần còn lại
                   .join(' '); // Nối các từ lại bằng khoảng trắng
+    }
+
+    // Hàm định dạng thời gian từ giây sang MM:SS
+    function formatTime(seconds) {
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = Math.floor(seconds % 60);
+        return `${minutes}:${String(remainingSeconds).padStart(2, '0')}`;
+    }
+
+    function updatePlayPauseButton() {
+        if (isPlaying) {
+            playPauseButton.innerHTML = '<i class="fas fa-pause"></i>'; // Icon tạm dừng
+        } else {
+            playPauseButton.innerHTML = '<i class="fas fa-play"></i>'; // Icon phát
+        }
     }
 
     function updateSongDisplay() {
@@ -161,37 +188,99 @@ document.addEventListener('DOMContentLoaded', () => {
     function playCurrentSong() {
         if (musicPlaylist.length === 0) {
             console.log("Danh sách phát nhạc trống.");
-            musicInfoElement.classList.remove('active'); // Ẩn music-info nếu không có nhạc
+            musicInfoElement.classList.remove('active');
+            // Loại bỏ: if (musicOverlay) musicOverlay.classList.remove('active');
+            isPlaying = false;
+            updatePlayPauseButton();
             return;
         }
+
         backgroundMusic.src = musicPlaylist[currentSongIndex];
         backgroundMusic.load(); // Tải bài hát mới
-        backgroundMusic.play().then(() => {
-            updateSongDisplay(); // Cập nhật hiển thị tên bài hát sau khi phát thành công
-        }).catch(error => {
-            console.log('Autoplay was prevented or error playing song:', error);
-            // Nếu bị chặn, bạn có thể thông báo cho người dùng hoặc hiển thị nút play
-            // Ví dụ: currentSongNameElement.textContent = "Bấm vào trang để phát nhạc";
-            musicInfoElement.classList.remove('active'); // Ẩn music-info nếu không phát được
-        });
+
+        const playPromise = backgroundMusic.play();
+        if (playPromise !== undefined) {
+            playPromise.then(() => {
+                isPlaying = true;
+                updatePlayPauseButton();
+                updateSongDisplay(); // Cập nhật hiển thị tên bài hát
+                // Loại bỏ: if (musicOverlay) musicOverlay.classList.remove('active');
+            }).catch(error => {
+                console.log('Autoplay was prevented or error playing song:', error);
+                isPlaying = false;
+                updatePlayPauseButton();
+                musicInfoElement.classList.remove('active');
+                // Thông báo cho người dùng rằng họ cần click để phát nhạc (nếu trình duyệt chặn autoplay)
+                currentSongNameElement.textContent = "Nhạc bị chặn phát tự động. Bấm nút Play.";
+            });
+        }
     }
+
+    function togglePlayPause() {
+        if (isPlaying) {
+            backgroundMusic.pause();
+            isPlaying = false;
+        } else {
+            // Cố gắng phát lại từ vị trí hiện tại
+            backgroundMusic.play().then(() => {
+                isPlaying = true;
+            }).catch(error => {
+                console.log('Error attempting to play music:', error);
+                // Xử lý lỗi nếu không thể phát (ví dụ: trình duyệt chặn)
+                isPlaying = false; // Đảm bảo trạng thái đúng
+                // Loại bỏ: if (musicOverlay) musicOverlay.classList.add('active');
+            });
+        }
+        updatePlayPauseButton();
+    }
+
 
     function playNextSong() {
         currentSongIndex = (currentSongIndex + 1) % musicPlaylist.length; // Chuyển sang bài tiếp theo, quay lại 0 nếu hết list
         playCurrentSong();
     }
 
-    // Lắng nghe sự kiện 'ended' để tự động chuyển bài
+    // --- Xử lý sự kiện cho điều khiển nhạc ---
+
+    // Cập nhật tổng thời gian khi metadata của nhạc được tải
+    backgroundMusic.addEventListener('loadedmetadata', () => {
+        totalTimeElement.textContent = formatTime(backgroundMusic.duration);
+    });
+
+    // Cập nhật thời gian hiện tại và thanh tiến trình
+    backgroundMusic.addEventListener('timeupdate', () => {
+        currentTimeElement.textContent = formatTime(backgroundMusic.currentTime);
+        const progressPercent = (backgroundMusic.currentTime / backgroundMusic.duration) * 100;
+        progressBar.style.width = `${progressPercent}%`;
+    });
+
+    // Tự động chuyển bài khi kết thúc
     backgroundMusic.addEventListener('ended', () => {
         playNextSong();
     });
 
-    // **** THAY ĐỔI Ở ĐÂY: Cố gắng phát nhạc ngay khi DOMContentLoaded ****
-    // Gọi hàm playCurrentSong() trực tiếp khi DOM được tải
-    playCurrentSong();
+    // Xử lý sự kiện click vào thanh tiến trình để tua nhạc
+    songProgressContainer.addEventListener('click', (e) => {
+        const progressBarWidth = songProgressContainer.clientWidth;
+        const clickX = e.offsetX; // Vị trí click tương đối trong thanh
+        const seekTime = (clickX / progressBarWidth) * backgroundMusic.duration;
+        backgroundMusic.currentTime = seekTime;
+    });
 
-    // Bạn có thể giữ lại phần này nếu muốn nhạc phát khi người dùng tương tác lần đầu
-    // trong trường hợp autoplay bị chặn.
+    // Xử lý sự kiện click cho nút Play/Pause
+    playPauseButton.addEventListener('click', togglePlayPause);
+
+    // Xử lý sự kiện click cho nút Next
+    nextButton.addEventListener('click', playNextSong);
+
+    // Cố gắng phát nhạc ngay khi DOMContentLoaded
+    playCurrentSong(); // Gọi lần đầu để bắt đầu phát
+
+    // Loại bỏ: Lắng nghe sự kiện click trên nút Play của overlay (nếu dùng)
+    // Loại bỏ: if (playMusicButton) { ... }
+
+    // Lắng nghe sự kiện click bất cứ đâu trên document (backup nếu nhạc bị chặn)
+    // Chỉ lắng nghe một lần để bắt đầu nhạc nếu nó chưa phát
     document.addEventListener('click', () => {
         if (backgroundMusic.paused && musicPlaylist.length > 0) {
             playCurrentSong();
@@ -199,7 +288,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { once: true });
 
 
-    // Ẩn music info ban đầu nếu chưa có nhạc hoặc chưa phát
-    // Sẽ được hiển thị khi nhạc bắt đầu phát
-    musicInfoElement.classList.remove('active');
+    // Khởi tạo trạng thái ban đầu của nút Play/Pause
+    updatePlayPauseButton();
+
+    // Hiển thị music info ngay từ đầu và load tên bài hát đầu tiên
+    updateSongDisplay();
+
+    // Loại bỏ logic hiển thị overlay ban đầu
+    // if (musicPlaylist.length > 0 && musicOverlay) { ... }
 });

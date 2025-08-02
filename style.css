@@ -44,7 +44,7 @@ body {
 }
 
 /* Đảm bảo các nội dung chính nằm trên lớp phủ và ảnh nền */
-.top-bar, .main-content, .profile-section {
+.top-bar, .main-content, .profile-section, .music-controls-container {
     position: relative; /* Quan trọng để z-index có tác dụng */
     z-index: 1; /* Đảm bảo các phần tử này hiển thị trên lớp phủ */
 }
@@ -188,7 +188,7 @@ body {
     align-items: center;
     width: 100%;
     padding: 20px;
-    margin-bottom: 20px; /* Khoảng cách với đáy container */
+    /* margin-bottom: 20px; Giảm margin bottom để chừa chỗ cho music controls */
 }
 
 .profile-card {
@@ -201,8 +201,8 @@ body {
 .avatar {
     width: 80px;
     height: 80px;
-    border-radius: 50%; /* Đây là dòng quan trọng để ảnh avatar hiển thị tròn */
-    object-fit: cover; /* Đảm bảo ảnh được cắt để vừa vặn mà không bị méo */
+    border-radius: 50%;
+    object-fit: cover;
     border: 3px solid #ff69b4; /* Viền hồng */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     margin-bottom: 5px;
@@ -240,6 +240,7 @@ body {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s ease, transform 0.2s ease;
     margin-top: 30px; /* Khoảng cách với vòng tròn */
+    margin-bottom: 30px; /* Khoảng cách với music controls */
 }
 
 .gallery-button:hover {
@@ -325,6 +326,69 @@ body {
     cursor: pointer;
 }
 
+/* -- CSS cho Music Controls -- */
+.music-controls-container {
+    width: calc(100% - 40px); /* Tương tự top-bar, có padding */
+    padding: 15px 20px;
+    background-color: rgba(255, 255, 255, 0.7); /* Nền mờ */
+    border-top: 1px solid rgba(255, 105, 180, 0.3); /* Viền trên hồng nhẹ */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* Khoảng cách giữa các phần tử con */
+    border-bottom-left-radius: 30px; /* Bo tròn góc dưới container */
+    border-bottom-right-radius: 30px;
+}
+
+.song-progress {
+    width: 90%;
+    height: 5px;
+    background-color: rgba(255, 105, 180, 0.3); /* Màu nền thanh tiến trình */
+    border-radius: 2.5px;
+    overflow: hidden; /* Quan trọng để thanh progress-bar nằm trong */
+    cursor: pointer; /* Cho phép click để tua */
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%; /* Ban đầu là 0% */
+    background-color: #ff69b4; /* Màu thanh tiến trình đang chạy */
+    border-radius: 2.5px;
+    transition: width 0.1s linear; /* Hiệu ứng mượt khi thanh chạy */
+}
+
+.time-display {
+    font-size: 0.9em;
+    color: #555;
+    font-weight: bold;
+}
+
+.player-buttons {
+    display: flex;
+    gap: 20px; /* Khoảng cách giữa các nút */
+}
+
+.player-buttons button {
+    background-color: #ff69b4;
+    color: white;
+    border: none;
+    border-radius: 50%; /* Nút tròn */
+    width: 45px; /* Kích thước nút */
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.3em; /* Kích thước icon */
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.player-buttons button:hover {
+    background-color: #e652a2;
+    transform: translateY(-2px);
+}
+
 /* Điều chỉnh Responsive cho màn hình nhỏ */
 @media (max-width: 600px) {
     .love-circle-container {
@@ -362,5 +426,14 @@ body {
     }
     .music-info .music-icon {
         margin-right: 5px;
+    }
+    /* Điều chỉnh kích thước nút điều khiển nhạc trên di động */
+    .player-buttons button {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1em;
+    }
+    .player-buttons {
+        gap: 15px;
     }
 }
