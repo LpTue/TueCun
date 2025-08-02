@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {  // Tí sửa lại "document.addEventListener('DOMContentLoaded', () => {"
     // --- Phần Đếm Ngày ---
     const dayCountElement = document.getElementById('dayCount');
     const startDateDisplay = document.getElementById('startDateDisplay');
